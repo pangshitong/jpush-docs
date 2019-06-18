@@ -2,7 +2,7 @@
 
 
 ## 概述
-JMessage Android IM SDK的基础功能。了解极光 IM 的详细信息，请参考：[JMessage 产品简介](../../guideline/jmessage_guide)
+JMessage Android IM SDK的基础功能。了解极光 IM 的详细信息，请参考文档：[JMessage 产品简介](../../guideline/jmessage_guide)
 
 
 ### 字符串规范
