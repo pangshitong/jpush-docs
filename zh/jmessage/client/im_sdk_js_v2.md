@@ -1034,7 +1034,7 @@ JMessage#sendSingleCustom()
    JIM.sendSingleCustom({
                  'target_username' : '<targetName>',
 		 'target_nickname' : '<targetNickname>',
-                 'custome' : '<json object>'
+                 'custom' : '<json object>'
                  'appkey' : '<targetAppkey>'
                }).onSuccess(function(data , msg) {
                   //data.code 返回码
@@ -2457,7 +2457,7 @@ JMessage#sendChatroomCustom()
    // 发送消息
    JIM.sendChatroomCustom({
               'target_rid' : '<targetRid>',
-                 'custome' : '<json object>'
+                 'custom' : '<json object>'
                  'appkey' : '<targetAppkey>'
                }).onSuccess(function(data , msg) {
                   //data.code 返回码

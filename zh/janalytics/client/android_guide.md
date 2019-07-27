@@ -50,21 +50,23 @@ distributionUrl=https\://services.gradle.org/distributions/gradle-3.3-all.zip
 
 ###Portal上创建应用
 
-使用注册账号登陆，进入极光控制台后，点击“创建应用”按钮，进入创建应用的界面。填上你的应用程序的名称以及应用包名这二项就可以了，最后点击最下方的 “创建我的应用”按钮，创建应用完毕。
+使用注册账号登陆，进入极光控制台-应用管理，点击「创建应用」按钮，进入创建应用的界面。输入应用名称和上传好应用图标（非必填），点击「确认」即可创建应用。
 
 ![jpush_android_guide](../image/jpush_app_create.png)
 ![jpush_android_guide](../image/jpush_app_create_2.png)
 
 ###查看应用信息
 
-创建应用之后返回用户主页面可以看到应用清单，点选你刚才创建的应用来查看应用信息。
+创建好应用后，如果想要查看该应用的详细信息，可点击应用条目右侧的「设置」按钮进入【应用信息】页面。
 
 ![jpush_android_guide](../image/jpush_app_info.png)
 
+
 ## JCenter 自动集成方式
 
-***说明1*** ： 使用jcenter自动集成的开发者，不需要在项目中添加jar，jcenter会自动完成依赖；jcenter 也会自动导入 JAnalytics 所需的权限和 meta-data 节点进你项目的 AndroidManifest 中。   
-***说明2*** ： 想添加动态圈选功能的开发者，将以下集成步骤与动态圈选相关的配置加上即可
+***说明1*** ：  使用jcenter自动集成的开发者，不需要在项目中添加jar，jcenter会自动完成依赖；jcenter 也会自动导入 JAnalytics 所需的权限和 meta-data 节点进你项目的 AndroidManifest 中。
+
+***说明2*** ： 想添加动态圈选功能的开发者，将以下集成步骤与动态圈选相关的配置加上即可。
 
 + 确认android studio的 Project 根目录的主 gradle 中配置了jcenter支持。
 
@@ -77,7 +79,7 @@ distributionUrl=https\://services.gradle.org/distributions/gradle-3.3-all.zip
                 //gradle建议版本
                 classpath 'com.android.tools.build:gradle:2.3.2'
                 //可选: 动态圈选plugin
-                classpath 'cn.jiguang.android:janalytics-gradle-plugin:2.0.0'
+                classpath 'cn.jiguang.android:janalytics-gradle-plugin:3.0.0'
             }
         }
 
@@ -114,7 +116,7 @@ distributionUrl=https\://services.gradle.org/distributions/gradle-3.3-all.zip
         dependencies {
             ......
 
-            compile 'cn.jiguang.sdk:janalytics:2.0.0' // 此处以JAnalytics 2.0.0 版本为例。
+            compile 'cn.jiguang.sdk:janalytics:2.1.0' // 此处以JAnalytics 2.1.0 版本为例。
             compile 'cn.jiguang.sdk:jcore:1.2.6' // 此处以JCore 1.2.6 版本为例。
             ......
         }
@@ -143,7 +145,8 @@ distributionUrl=https\://services.gradle.org/distributions/gradle-3.3-all.zip
 
 
 ##本地工程配置  
-***说明*** ： 想添加动态圈选功能的开发者，需要将以下集成步骤与动态圈选相关的配置加上即可
+
+***说明*** ： 想添加动态圈选功能的开发者，需要将以下集成步骤与动态圈选相关的配置加上即可。
 
 + 解压压缩包，将libs下的所有文件复制到工程的libs下面.
 	+ jcore 和 janalytics 两个 jar 文件。
@@ -212,7 +215,7 @@ distributionUrl=https\://services.gradle.org/distributions/gradle-3.3-all.zip
                 //gradle建议版本
                 classpath 'com.android.tools.build:gradle:2.3.2'
                 //可选: 动态圈选plugin
-                classpath 'cn.jiguang.android:janalytics-gradle-plugin:2.0.0'
+                classpath 'cn.jiguang.android:janalytics-gradle-plugin:3.0.0'
             }
         }
 
@@ -232,9 +235,10 @@ distributionUrl=https\://services.gradle.org/distributions/gradle-3.3-all.zip
         
 + 混淆相关：在混淆文件中添加以下配置，防止 sdk 的接口被混淆。
 
-			-keep public class cn.jiguang.analytics.android.api.** {
-    			*;
-			}
+			-keep class cn.jiguang.** { *; }
+			-keep class android.support.** { *; }
+			-keep class androidx.** { *; }
+			-keep class com.google.android.** { *; }
 
 ##添加代码
 

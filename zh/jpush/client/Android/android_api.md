@@ -167,7 +167,11 @@ JPush SDK 提供的推送服务是默认开启的。
 
 开始的版本：最初。
 
-**注：** 3.3.0开始提供[新的消息回调方式](https://docs.jiguang.cn/jpush/client/Android/android_api/#_66)，如采用新的回调方式进行处理，将不再回调该类。具体请参考新的消息回调方式。
+**注：** 3.3.0开始使用[新的消息回调方式](https://docs.jiguang.cn/jpush/client/Android/android_api/#_66)
+如果你依然需要在这个Receiver里接收到回调，则使用新的回调方式以后，不重写对应回调的方法，或者重写回调方法且调用super方法
+如果你不需要在这个Receiver接收，则使用新的回调方式，然后重写对应回调方法，不调用super方法。
+具体请参考新的消息回调方式。
+
 
 ### 功能说明
 
@@ -824,7 +828,10 @@ JPush 服务的连接状态发生变化。（注：不是指 Android 系统的�
 1. 新的消息回调方式中相关回调类。
 2. 新的 tag 与 alias 操作回调会在开发者定义的该类的子类中触发。
 3. 手机号码设置的回调会在开发者定义的该类的子类中触发。
-4. 3.3.0 版本开始，通过该类进行事件处理之后，原来通过自定义 Receiver 接收的事件，将不再回调给自定义 Receiver，而是回调到JPushMessageReceiver，否则，还是回调到自定义  Receiver。
+4. 新回调方式与旧的自定义Receiver兼容：  
+配置了此Receiver以后，默认是也会发广播给旧Receiver的  
+对于onMessage、onNotifyMessageArrived、onNotifyMessageOpened、onMultiActionClicked  
+如果重写了这些方法，则需要调用super才会发给旧Receiver  
 
 该类为回调父类，开发者需要继承该类并[在 Manifest 中配置](https://docs.jiguang.cn/jpush/client/Android/android_guide/#_5)您对应实现的类，接口操作的结果会在您配置的类中的如下方法中回调。
 
@@ -989,7 +996,11 @@ alias 相关的操作会在此方法中回调结果。
 
 ####  支持的版本
 
-开始支持的版本：3.3.0
+开始支持的版本：3.3.0  
+*** 说明 *** 
+如果需要在旧版本的Receiver接收cn.jpush.android.intent.MESSAGE_RECEIVED广播  
+可以不重写此方法，或者重写此方法且调用super.onMessage  
+如果重写此方法，没有调用super，则不会发送广播到旧版本Receiver  
 
 #### 方法定义
 
@@ -1008,7 +1019,11 @@ alias 相关的操作会在此方法中回调结果。
 
 ####  支持的版本
 
-开始支持的版本：3.3.0
+开始支持的版本：3.3.0  
+*** 说明 *** 
+如果需要在旧版本的Receiver接收cn.jpush.android.intent.NOTIFICATION_RECEIVED广播  
+可以不重写此方法，或者重写此方法且调用super.onNotifyMessageArrived  
+如果重写此方法，没有调用super，则不会发送广播到旧版本Receiver  
 
 #### 方法定义
 
@@ -1027,7 +1042,11 @@ alias 相关的操作会在此方法中回调结果。
 
 ####  支持的版本
 
-开始支持的版本：3.3.0
+开始支持的版本：3.3.0  
+*** 说明 *** 
+如果需要在旧版本的Receiver接收cn.jpush.android.intent.NOTIFICATION_OPENED广播  
+可以不重写此方法，或者重写此方法且调用super.onNotifyMessageOpened  
+如果重写此方法，没有调用super，则不会发送广播到旧版本Receiver    
 
 #### 方法定义
 
@@ -1121,6 +1140,34 @@ alias 相关的操作会在此方法中回调结果。
 	+ 应用的 Application Context。
 + CmdMessage
 	+ 错误信息
+
+
+### Method - onMultiActionClicked
+
+通知的MultiAction回调
+
+####  支持的版本
+
+开始支持的版本：3.3.2  
+*** 说明 *** 
+如果需要在旧版本的Receiver接收cn.jpush.android.intent.NOTIFICATION_CLICK_ACTION广播  
+可以不重写此方法，或者重写此方法且调用super.onMultiActionClicked  
+如果重写此方法，没有调用super，则不会发送广播到旧版本Receiver  
+
+
+#### 方法定义
+
+	 public void onMultiActionClicked(Context context,Intent intent)
+
+#### 参数定义
+
++ context
+	+ 应用的 Application Context。
++ intent
+	+ 点击后触发的Intent	
+	
+***说明*** 注意这个方法里面禁止再调super.onMultiActionClicked,因为会导致逻辑混乱
+
 
 ## 老别名 alias 与标签 tag 接口
 1.5.0 ～ 3.0.6 版本提供的别名与标签接口都是覆盖的逻辑，从 3.0.7 版本开始不再维护（但仍会继续保留）。建议开发者使用 3.0.7 开始提供的新 tag、alias 接口。
@@ -1897,7 +1944,7 @@ public static void addLocalNotification(Context context, JPushLocalNotification 
 
 #### 参数说明
 + context 是应用的 ApplicationContext
-+ notification 是本地通知对象
++ notification 是本地通知对象；建议notificationId设置为正整数，为0或者负数时会导致本地通知无法清除。
 
 #### 调用说明
 本接口可以在 JPushInterface.init 之后任何地方调用
@@ -1910,12 +1957,12 @@ public static void removeLocalNotification(Context context, long notificationId)
 
 #### 参数说明
 + context 是应用的 ApplicationContext
-+ notificationId 是要移除的本地通知的 ID
++ notificationId 是要移除的本地通知的 ID，注意notificationId为0或者负数的通知无法移除
 
 #### 调用说明
 本接口可以在 JPushInterface.init 之后任何地方调用
 
-### API  clearLocalNotifications 移除所有的本地通知
+### API  clearLocalNotifications 移除所有的本地通知，注意notificationId为0或者负数时通知无法移除
 
 #### 接口定义
 ```
@@ -1974,6 +2021,33 @@ ln.setExtras(json.toString()) ;
 JPushInterface.addLocalNotification(getApplicationContext(), ln);
 ```
 
+## NotificationChannel配置
+### 支持的版本
+开始支持的版本：3.3.4
+### 功能说明：
+Android8.0以后通知都走NotificationChannel了。开发者可以自行定义NotificationChannel，然后在API推送的时候可以指定channelId推送；
+在Android8.0及以上的机型，通知会先查找对应channelId的channel，通知的重要等级、声音、震动、呼吸灯由channel决定；
+如果没有找到channelId，或者处于静默时间内，则走默认的极光channel。
+
+自定义NotificationChannel示例
+```
+    private void initChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm != null){
+                NotificationChannelGroup notificationChannelGroup = new NotificationChannelGroup("MyGroupId", "自定义通知组");
+                nm.createNotificationChannelGroup(notificationChannelGroup);
+
+                NotificationChannel notificationChannel = new NotificationChannel("MyChannelId", "自定义通知", NotificationManager.IMPORTANCE_HIGH);
+                notificationChannel.setGroup("MyGroupId");
+                notificationChannel.enableLights(true);
+                notificationChannel.enableVibration(true);
+                nm.createNotificationChannel(notificationChannel);
+            }
+        }
+    }
+```
+
 ##地理围栏 API
 ### 支持的版本
 开始支持的版本：3.1.8
@@ -2008,3 +2082,16 @@ public static void setMaxGeofenceNumber(Context context, int maxNumber)
 #### 参数说明
 + context 是应用的 ApplicationContext
 + maxNumber 最多允许保存的地理围栏个数
+
+### API  deleteGeofence 
+#### 功能说明
+删除指定id的地理围栏
+
+#### 接口定义
+```
+public static void deleteGeofence(Context context, String geofenceid)
+```
+
+#### 参数说明
++ context 是应用的 ApplicationContext
++ geofenceid 地理围栏的id

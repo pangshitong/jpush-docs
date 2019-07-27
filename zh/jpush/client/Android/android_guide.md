@@ -129,8 +129,8 @@
         dependencies {
             ......
 
-            compile 'cn.jiguang.sdk:jpush:3.3.0'  // 此处以JPush 3.3.0 版本为例。
-            compile 'cn.jiguang.sdk:jcore:2.0.1'  // 此处以JCore 2.0.1 版本为例。
+            compile 'cn.jiguang.sdk:jpush:3.3.4'  // 此处以JPush 3.3.4 版本为例。
+            compile 'cn.jiguang.sdk:jcore:2.1.2'  // 此处以JCore 2.1.2 版本为例。
             ......
         }
 
@@ -146,7 +146,9 @@
                  <intent-filter>
                      <action android:name="cn.jiguang.user.service.action" />
                  </intent-filter>
-         </service>        
+         </service>    
+         
+      ***注*** : **从JPush3.0.7开始，需要配置继承JPushMessageReceiver的广播，原来如果配了MyReceiver现在可以弃用。示例如下。
 
          <!-- Required since 3.0.7 -->
          <!-- 新的 tag/alias 接口结果返回需要开发者配置一个自定的广播 -->
@@ -272,7 +274,6 @@ defaultConfig {
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <!-- Optional. Required for location feature -->
@@ -377,7 +378,7 @@ defaultConfig {
             </intent-filter>
         </activity>
 
-        <!-- Required SDK 核心功能-->
+        <!-- 注意此配置在 JPush 3.2.0 及以前版本是必须配置，3.2.0 以后版本已废弃此配置-->
         <service
             android:name="cn.jpush.android.service.DownloadService"
             android:enabled="true"
@@ -414,7 +415,8 @@ defaultConfig {
         </receiver>
 
         <!-- User defined. 用户自定义的广播接收器-->
-        <!--3.3.0开始可以通过继承 JPushMessageReceiver并配置来接收所有事件回调，这样将不再使用此处自定义方式回调；建议开发者都是用新的JPushMessageReceiver方式进行。-->
+        <!-- 这是3.3.0之前版本的接收方式，3.3.0开始是通过继承 JPushMessageReceiver并配置来接收所有事件回调。>
+        <!-- 如果仍然需要在这个Receiver里接收，需要在JPushMessageReceiver 的子类里不重写对应的回调方法，或者重写方法且调用super-->
          <receiver
              android:name="您自己定义的 Receiver"
              android:enabled="true"
@@ -509,7 +511,7 @@ defaultConfig {
     </tr>
     <tr >
       <td>WRITE_SETTINGS</td>
-      <td>允许应用读写系统设置项。</td>
+      <td>允许应用读取系统设置项。 该权限从 JPush 3.3.2 版本开始变为可选权限，在 3.3.2 前版本为必须权限。</td>
     </tr>
     <tr >
       <td>VIBRATE</td>
@@ -603,7 +605,7 @@ JPush SDK 提供的 API 接口，都主要集中在 cn.jpush.android.api.JPushIn
 ```
 [JPushInterface] action:init
 .......
-[PushService] Login succeed!
+[ConnectingHelper] Login succeed
 ```
 
 如图所示，客户端启动分为 4 步：
@@ -650,7 +652,7 @@ JPush SDK 为了尽可能提高开发者在国外设备的推送送达率，对�
 
 + 请仔细阅读文档，查看是否有遗漏。 [Android FAQ](../Android/android_faq/)
 + 你可以到极光社区搜索类似问题
-+ 给我们的 support 发邮件 [support&#64;jpush.cn](mailto:support&#64;jpush.cn)
++ 给我们的 support 发邮件 [support&@jpush.cn](mailto:support@jpush.cn)
 
 为了更快速的解决问题，在寻求帮助时，请提供下列信息：
 

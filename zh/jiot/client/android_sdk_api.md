@@ -5,10 +5,13 @@
 创建JIOT客户端
 #### 接口定义
 ```
-void jiotInit();
+void jiotInit(Context context, boolean isUseSsl);
 ```
+
 #### 参数说明
-无
+* context 应用的上下文对象
+* isUseSsl 是否启用ssl加密通道的标志
+
 #### 返回值
 无
 ### jiotConn
@@ -67,7 +70,7 @@ JIOT客户端上报设备属性
 
 #### 接口定义
 ```
-JiotResult jiotPropertyReportReq(PropertyReport properyReport);
+JiotResult jiotPropertyReportReq(PropertyReportReq properyReport);
 ```
 
 #### 参数说明
@@ -81,7 +84,7 @@ JIOT客户端上报事件请求
 
 #### 接口定义
 ```
-JiotResult jiotEventReportReq(EventReport eventReport);
+JiotResult jiotEventReportReq(EventReportReq eventReport);
 ```
 
 #### 参数说明
@@ -100,29 +103,6 @@ JiotResult jiotVersionReportReq(VersionReportReq versionReportReq);
 #### 参数说明
 versionReportReq 设备版本
 
-#### 返回值
-客户端实时返回结果
-
-### jiotPropertySetRsp
-JIOT客户端回复属性设置请求的回复
-#### 接口定义
-```
-JiotResult jiotPropertySetRsp(PropertySetRsp propertySetRsp);
-```
-
-#### 参数说明
-* propertySetRsp 属性设置回复
-#### 返回值
-* 客户端实时返回结果
-
-### jiotMsgDeliverRsp
-JIOT客户端回复消息下发请求的回复
-#### 接口定义
-```
-JiotResult jiotMsgDeliverRsp(MsgDeliverRsp msgDeliverRsp);
-```
-#### 参数说明
-* msgDeliverRsp 下发消息回复
 #### 返回值
 客户端实时返回结果
 
@@ -216,10 +196,12 @@ void jiotConnectFailHandle(int errorCode);
 客户端mqtt连接中断，在此之前连接成功过
 #### 接口定义
 ```
-void jiotDisconnectHandle(int errorCode);
+void jiotDisconnectHandle(int errorCode,String msg);
 ```
 #### 参数说明
 * errorCode JIOT客户端异常错误码
+* msg 断开的原因
+
 #### 返回值
 无
 

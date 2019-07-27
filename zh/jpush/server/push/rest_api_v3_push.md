@@ -416,14 +416,21 @@ Android 平台上的通知，JPush SDK 按照一定的通知栏样式展示。
 			<td>int</td>
 			<td>可选</td>
 			<td>通知栏样式 ID</td>
-			<td>Android SDK 可<a href="https://docs.jiguang.cn/jpush/client/Android/android_api/#api_8">设置通知栏样式</a>，这里根据样式 ID 来指定该使用哪套样式。</td>
+			<td>Android SDK 可<a href="https://docs.jiguang.cn/jpush/client/Android/android_api/#api_8">设置通知栏样式</a>，这里根据样式 ID 来指定该使用哪套样式，android 8.0 开始建议采用<a href="https://docs.jiguang.cn/jpush/client/Android/android_api/#notificationchannel">NotificationChannel配置</a>。</td>
+		</tr>
+		<tr >
+			<td>channel_id</td>
+			<td>String</td>
+			<td>可选</td>
+			<td>android通知channel_id</td>
+			<td>不超过1000字节，Android 8.0开始可以进行<a href="https://docs.jiguang.cn/jpush/client/Android/android_api/#notificationchannel">NotificationChannel配置</a>，这里根据channel ID 来指定通知栏展示效果。</td>
 		</tr>
 		<tr >
 			<td>priority</td>
 			<td>int</td>
 			<td>可选</td>
 			<td>通知栏展示优先级</td>
-			<td>默认为 0，范围为 -2～2 ，其他值将会被忽略而采用默认。</td>
+			<td>默认为 0，范围为 -2～2。</td>
 		</tr>
 		<tr >
 			<td>category</td>
@@ -480,14 +487,14 @@ Android 平台上的通知，JPush SDK 按照一定的通知栏样式展示。
 			<td>可选</td>
 			<td>通知栏大图标</td>
 			<td>图标路径可以是以http或https开头的网络图片，如：http:jiguang.cn/logo.png ,图标大小不超过 30 k;
-也可以是位于drawable资源文件夹的图标路径，如：R.drawable.lg_icon； </td>
+也可以是位于drawable资源文件夹的图标路径，如：R.drawable.lg_icon；<br/>如果有此字段值，推送一定走极光自有通道下发。 </td>
 		</tr>
 		<tr >
 			<td>intent</td>
 			<td>JSON Object</td>
 			<td>可选</td>
 			<td>指定跳转页面</td>
-			<td>使用 intent 里的 url 指定点击通知栏后跳转的目标页面。</td>
+			<td>使用 intent 里的 url 指定点击通知栏后跳转的目标页面;<br/>如果有此字段值，推送一定走极光自有通道下发。</td>
 		</tr>
 	</table>
 </div>
@@ -957,6 +964,179 @@ groupkey 可以在创建的分组信息中获取，使用起来同 appkey 类似
 curl --insecure -X POST -v https://api.jpush.cn/v3/grouppush -H "Content-Type: application/json" -u "group-e4c938578ee598be517a2243:71d1dc4dae126674ed386b7b" -d '{"platform":["android"],"audience":"all","notification":{"android":{"alert":"notification content","title":"notification title"}},"message":{"msg_content":"message content"}}'
 ```
 
+
+## 批量单推（VIP专属接口） 
+
+### 调用地址
+POST  https://api.jpush.cn/v3/push/batch/regid/single <br/>
+POST  https://api.jpush.cn/v3/push/batch/alias/single
+
+***注***：/v3/push/batch/regid/single 针对的是RegID方式批量单推，/v3/push/batch/alias/single 针对的是Alias方式批量单推
+
+### 功能说明
+如果您在给每个用户的推送内容都不同的情况下，可以使用此接口。
+
+如需要开通此接口，请联系：[商务客服](https://www.jiguang.cn/accounts/business_contact?fromPage=push_doc)
+
+### 调用说明
+使用此接口前，您需要配合使用 [cid:推送唯一标识符](https://docs.jiguang.cn/jpush/server/push/rest_api_v3_push/#cid) 接口提前获取到 cid 池，获取时 type=push 或者不传递 type 值；获取到cid值后，传递参数格式如下：
+
+```
+{"pushlist":{
+    "cid值1":{     
+        ...
+    },
+    "cid值2":{     
+        ...
+    },
+    ...
+}}
+
+```
+
+### 调用示例
+
+**Request Header**
+
+> POST /v3/push/batch/regid/single HTTP/1.1
+> Authorization: Basic N2Q0MzFlNDJkZmE2YTZkNjkzYWMyZDA0OjVlOTg3YWM2ZDJlMDRkOTVhOWQ4ZjBkMQ==
+
+或者
+> POST /v3/push/batch/alias/single HTTP/1.1
+> Authorization: Basic N2Q0MzFlNDJkZmE2YTZkNjkzYWMyZDA0OjVlOTg3YWM2ZDJlMDRkOTVhOWQ4ZjBkMQ==
+
+
+**Request Params**
+
+```
+pushlist
+	必填参数。JSON类型
+cid值
+	必填参数。JSON类型，取值：push（默认），JSON Value部分具体字段参考下面表格说明
+```
+<div class="table-d" align="center" >
+	<table border="1" width = "100%">
+		<tr  bgcolor="#D3D3D3" >
+			<th>关键字</th>
+			<th >选项</th>
+			<th >含义</th>
+		</tr>
+		<tr >
+			<td>platform</td>
+			<td>必填</td>
+			<td>推送平台设置</td>
+		</tr>
+		<tr >
+			<td>target</td>
+			<td>必填</td>
+			<td>推送设备指定。<br/>如果是调用RegID方式批量单推接口（/v3/push/batch/regid/single），那此处就是指定regid值；<br/>如果是调用Alias方式批量单推接口（/v3/push/batch/alias/single），那此处就是指定alias值。</td>
+		</tr>
+		<tr >
+			<td>notification</td>
+			<td>可选</td>
+			<td>通知内容体。是被推送到客户端的内容。与 message 一起二者必须有其一，可以二者并存</td>
+		</tr>
+		<tr >
+			<td>message</td>
+			<td>可选</td>
+			<td>消息内容体。是被推送到客户端的内容。与 notification 一起二者必须有其一，可以二者并存 </td>
+		</tr>
+		<tr>
+			<td>sms_message</td>
+			<td>可选</td>
+			<td>短信渠道补充送达内容体</td>
+		</tr>
+		<tr >
+			<td>options</td>
+			<td>可选</td>
+			<td>推送参数 </td>
+		</tr>
+	</table>
+</div>
+
+完整参数示例：
+```
+{"pushlist":{
+    "cid1":{     
+        "platform": "all",
+        "target": "aliasvalue1",       // 此处填写的是regid值或者alias值
+        "notification": {
+            ...    // 省略参数同push api部分
+        },
+        "message": {
+            ...   // 省略参数同push api部分
+        },
+        "sms_message":{
+            ...  // 省略参数同push api部分
+        },
+        "options": {
+            ...  // 省略参数同push api部分
+        }
+    },
+    "cid2":{     
+        "platform": "all",
+        "target": "aliasvalue2",       // 此处填写的是regid值或者alias值
+        "notification": {
+            ...
+        },
+        "message": {
+            ...
+        },
+        "sms_message":{
+            ...
+        },
+        "options": {
+            ...
+        }
+    },
+    ...
+}}
+```
+
+**Response**
+
+成功返回：
+```
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+ 
+Success Response Data
+{
+    "cid1"：{
+        "msg_id":134123478
+    },
+    "cid1"：{
+        "msg_id":134123478,
+        "error":{
+            "code":1011,
+            "message":"****"
+        }
+    },
+    "cid3"：{
+        "error":{
+            "code":1009,
+            "message":"****"
+        }
+    },
+    ...
+}
+```
+
+失败返回：
+```
+HTTP/1.1 400 OK
+Content-Type: application/json; charset=utf-8
+ 
+ Failed Response Data 
+{
+    "error":{
+        "message":"Authen failed",
+        "code":1004
+    }
+}
+```
+
+
 ## 推送校验 API
 
 ### 调用地址
@@ -1074,6 +1254,18 @@ POST https://api.jpush.cn/v3/push/validate
 			<td>2005</td>
 			<td>信息发送量超出合理范围。</td>
 			<td>检测到目标用户累计发送消息量过大，超过合理的使用范围，需要检查业务逻辑或者联系技术支持。</td>
+			<td>403</td>
+		</tr>
+		<tr>
+			<td>2006</td>
+			<td>非VIP用户。</td>
+			<td>接口只针对VIP用户开放。</td>
+			<td>403</td>
+		</tr>
+		<tr>
+			<td>2007</td>
+			<td>无权调用此接口。</td>
+			<td>请联系商务开通使用权限。</td>
 			<td>403</td>
 		</tr>
 	</table>
